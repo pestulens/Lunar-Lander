@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <cp:category>model</cp:category>
+  <dcterms:created xsi:type="dcterms:W3CDTF">2023-10-22T13:39:26Z</dcterms:created>
+  <dc:creator>s3928</dc:creator>
+  <cp:lastModifiedBy>s3928</cp:lastModifiedBy>
+  <dcterms:modified xsi:type="dcterms:W3CDTF">2023-10-22T14:55:20Z</dcterms:modified>
+  <cp:revision>1.2</cp:revision>
+  <cp:version>R2023a</cp:version>
+</cp:coreProperties>
