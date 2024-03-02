@@ -28,10 +28,10 @@ for i = 1:length(T)
     A(1:3,i) = mom(1:3,i)./T(i);
 end
 
-%% moment demanded
+%% Load data from sinulink
 
 Md = out.torque.Data';
-
+t  = out.torque.time;
 %% allocation 
 f = [1 1 1 1 1 1 1 1];
 for i =1:length(Md)
@@ -45,7 +45,7 @@ for i =1:length(Md)
     x1 = solve(prob);
     u(:,i) = x1.x;
 end
-
+u_in = [t u'];
 % prob = optimproblem;
 %     x = optimvar('x',8,length(Md),'LowerBound',0);
 %     Aeq = A;
