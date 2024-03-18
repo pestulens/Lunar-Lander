@@ -7,13 +7,13 @@ for i = 1:length(a)
 end
 
 %% thrust decomposition
-gam = 30;
+gama = 30;
 T = 10 +zeros(1,8);%thrust (N)
 for i = 1:length(T)
     if mod(i,2) == 0
-        F(1:3,i) = [T(i)*sind(gam)*sind(a(i));-T(i)*sind(gam)*cosd(a(i));T(i)*cosd(gam)];
+        F(1:3,i) = [T(i)*sind(gama)*sind(a(i));-T(i)*sind(gama)*cosd(a(i));T(i)*cosd(gama)];
     else
-        F(1:3,i) = [-T(i)*sind(gam)*sind(a(i));T(i)*sind(gam)*cosd(a(i));T(i)*cosd(gam)];
+        F(1:3,i) = [-T(i)*sind(gama)*sind(a(i));T(i)*sind(gama)*cosd(a(i));T(i)*cosd(gama)];
     end
 end
 
