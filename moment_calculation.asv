@@ -6,8 +6,8 @@ for i = 1:length(a)
     l(1:2,i) = r*[cosd(a(i));sind(a(i))];
 end
 %% Model parameters
-TimeStep = 10^-2;   %Simulation time step(second)
-TimeStop = 10;      %Simulation time (second)
+TimeStep = 10^-3;   %Simulation time step(second)
+TimeStop = 1;      %Simulation time (second)
 %% thrust decomposition
 gam = 30;
 T = 10 +zeros(1,8);%thrust (N)
@@ -30,17 +30,10 @@ for i = 1:length(T)
     A(1:3,i) = Moment_thrust(1:3,i)./T(i);
 end
 
-<<<<<<< Updated upstream
-%% Load data from sinulink
-
-Md = out.torque.Data';
-t  = out.torque.time;
-=======
 %% Simulink
 SimulinkData=sim("lunar_lander_sim_an.slx",TimeStop);
 MomentDemand = SimulinkData.torque.Data'; %moment demand
 
->>>>>>> Stashed changes
 %% allocation 
 f = [1 1 1 1 1 1 1 1];
 for i =1:length(MomentDemand)
@@ -51,11 +44,10 @@ for i =1:length(MomentDemand)
     cons = Aeq*x == beq;
     prob.Constraints.cons = cons;
     prob.Objective = f*x;
-    op = optimset('Display','off');
-    x1 = solve(prob,"Options",op);
+    x1 = solve(prob,Solver="linprog",Options=);
     u(:,i) = x1.x;
 end
-u_in = [t u'];
+
 % prob = optimproblem;
 %     x = optimvar('x',8,length(Md),'LowerBound',0);
 %     Aeq = A;
@@ -79,17 +71,5 @@ u_in = [t u'];
     % linprog(f,Aeq,beq,A,beq,-Inf,Inf)
     % u(:,i) = x1.x;
 %% plot
-time_plot = 0:TimeStep:TimeStop;
 figure(1)
-plot(time_plot,u')
-
-figure(2)
-for i = 1:8
-    subplot(4,2,i)
-    plot(time_plot,u(i,:))
-    xlabel("time(second)")
-    ylabel("Force(N)")
-end
-
-%% pwpf input 
-test = [time_plot' u(1,:)'];
+plot(0:TimeStep:TimeStop,u')
