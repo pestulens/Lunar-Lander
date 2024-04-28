@@ -1,13 +1,14 @@
+
 close all;clc;clear
 r = 0.35; %radius(m)
-a = 0:45:315;
+a = 22.5:45:337.5;
 l = zeros(3,8);
 for i = 1:length(a)
     l(1:2,i) = r*[cosd(a(i));sind(a(i))];
 end
 %% Model parameters
-TimeStep = 10^-3;   %Simulation time step(second)
-TimeStop = 5;      %Simulation time (second)
+TimeStep = 10^-2;   %Simulation time step(second)
+TimeStop = 10;      %Simulation time (second)
 %% thrust decomposition
 gam = 30;
 T = 10 +zeros(1,8);%thrust (N)
@@ -32,26 +33,17 @@ end
 
 %% Simulink
 SimulinkData=sim("lunar_lander_sim_an.slx",TimeStop);
-MomentDemand = SimulinkData.torque.Data'; %moment demand
-
-%% Load data from sinulink
-Md = SimulinkData.torque.Data';
-t  = SimulinkData.torque.time;
-LinearTerm = SimulinkData.LinearTerm.Data;
-NonLinearTerm = SimulinkData.NonLinearTerm.Data;
-for i = 1:length(t)
-    LNratio(i,1:3) = LinearTerm(i,1:3)./NonLinearTerm(i,1:3);
-    NLratio(i,1:3) = NonLinearTerm(i,1:3)./LinearTerm(i,1:3);
-end
-
-
+MomentDemand = SimulinkData.torque.Data'; %moment demand 
+MomentImpulseDemand = MomentDemand.*TimeStep;
+t = SimulinkData.tout;
+tic
 %% allocation 
 f = [1 1 1 1 1 1 1 1];
 for i =1:length(MomentDemand)
     prob = optimproblem;
-    x = optimvar('x',8,1,'LowerBound',0,'UpperBound',10);
-    Aeq = A;
-    beq = MomentDemand(1:3,i);
+    x = optimvar('x',8,1,'LowerBound',0);
+    Aeq = Moment_thrust;
+    beq = MomentImpulseDemand(1:3,i);
     cons = Aeq*x == beq;
     prob.Constraints.cons = cons;
     prob.Objective = f*x;
@@ -94,76 +86,6 @@ for i = 1:8
     plot(time_plot,u(i,:))
     xlabel("time(second)")
     ylabel("Force(N)")
-end
-%% 
-close all
-
-figure(3)
-for i = 1:3
-    subplot(3,1,i)
-    plot(t,LNratio(:,i))
-    xlabel("time(second)")
-    ylabel("Command Torque")
-    switch i
-        case 1
-            title("X")
-        case 2
-            title("y")
-        case 3
-            title("z")
-    end
-    sgtitle("Linear term to NonLinear term Ratio")
-end
-
-
-figure(4)
-for i = 1:3
-    subplot(3,1,i)
-    plot(t,LinearTerm(:,i))
-    xlabel("time(second)")
-    ylabel("Command Torque")
-    switch i
-        case 1
-            title("X")
-        case 2
-            title("y")
-        case 3
-            title("z")
-    end
-    sgtitle("Linear term")
-end
-
-figure(5)
-for i = 1:3
-    subplot(3,1,i)
-    plot(t,NonLinearTerm(:,i))
-    xlabel("time(second)")
-    ylabel("Command Torque")
-    switch i
-        case 1
-            title("X")
-        case 2
-            title("y")
-        case 3
-            title("z")
-    end
-    sgtitle("NonLinear term")
-end
-
-figure(6)
-for i = 1:3
-    subplot(3,1,i)
-    plot(t,NLratio(:,i))
-    xlabel("time(second)")
-    switch i
-        case 1
-            title("X")
-        case 2
-            title("y")
-        case 3
-            title("z")
-    end
-    sgtitle("NonLinear term to Linear term Ratio")
 end
 
 %% pwpf input 
