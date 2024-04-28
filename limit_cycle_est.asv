@@ -1,0 +1,47 @@
+close all;clc;clear
+
+a = 0.5;    %angular acclereation in one axis
+t_doff = 0.1;   %close dealy of thruster
+t_don = 0.2;    %open delay of thruster
+H = 0:0.01:0.9;   %hysteresis
+D = 0:0.01:0.9;   %deadband
+Kd = 1.3;   %angular velocity gain
+for i = 1:length(H)
+    for j = 1:length(D)
+        HR(i,j) = (H(i)- D(j))/(H(i)+D(j));
+        d = 0.5*(H(i)+D(j));
+        d_lower(i,j) = ( a*t_doff*(2*Kd-t_don)*(2*Kd-t_doff) )/( 8*Kd - 4*t_don - 4*t_doff - HR(i,j)*(2*Kd*t_don) );
+        if H(i)>D(j)
+            P_max(i,j) = ( a*t_doff*(2*Kd-t_doff)+2*(H(i)-D(j)) )/(4*Kd-2*t_doff-2*t_don);
+            theta_1(i,j) = H(i) - Kd*P_max(i,j) + t_don*P_max(i,j);
+            theta_max(i,j) = theta_1(i,j) + P_max(i,j)^2/(2*a);
+            period(i,j) = 4*( theta_1(i,j)/P_max(i,j) + P_max(i,j)/a );
+        else
+            P_max(i,j) = NaN;
+            theta_1(i,j) = NaN;
+            theta_max(i,j) = NaN;
+            period(i,j) = NaN;
+        end
+    end
+end
+
+figure(1)
+surf(D,H,rad2deg(theta_max))
+xlabel("DeadBand")
+ylabel("hysteresis")
+title("max angular error")
+colorbar
+
+figure(2)
+surf(D,H,period)
+xlabel("DeadBand")
+ylabel("hysteresis")
+title("period")
+colorbar
+
+figure(3)
+surf(D,H,rad2deg(P_max))
+xlabel("DeadBand")
+ylabel("hysteresis")
+title("max angular rate error")
+colorbar

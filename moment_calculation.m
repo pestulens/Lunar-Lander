@@ -1,7 +1,8 @@
 close all;clc;clear
 r = 0.35; %radius(m)
-a = 0:45:315;
+a = 22.5:45:337.5;
 l = zeros(3,8);
+I=[0.619 -0.008 0;-0.008 0.782 0;0 0 1.226];
 for i = 1:length(a)
     l(1:2,i) = r*[cosd(a(i));sind(a(i))];
 end
