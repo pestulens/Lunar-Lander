@@ -3,6 +3,7 @@ r = 0.35; %radius(m)
 a = 22.5:45:337.5;
 l = zeros(3,8);
 I=[0.619 -0.008 0;-0.008 0.782 0;0 0 1.226];
+% I=[10 -0.008 0;-0.008 10 0;0 0 20];
 for i = 1:length(a)
     l(1:2,i) = r*[cosd(a(i));sind(a(i))];
 end
@@ -11,7 +12,7 @@ TimeStep = 10^-3;   %Simulation time step(second)
 TimeStop = 5;      %Simulation time (second)
 %% thrust decomposition
 gam = 30;
-T = 10 +zeros(1,8);%thrust (N)
+T = 0.3 +zeros(1,8);%thrust (N)
 for i = 1:length(T)
     if mod(i,2) == 0
         F(1:3,i) = [T(i)*sind(gam)*sind(a(i));-T(i)*sind(gam)*cosd(a(i));T(i)*cosd(gam)];
@@ -25,6 +26,7 @@ end
 for i = 1:length(T)
     Moment_thrust(1:3,i) = cross(l(1:3,i),F(1:3,i));
 end
+rad2deg(I^-1*Moment_thrust)
 
 %% linear formation
 for i = 1:length(T)
