@@ -1,47 +1,118 @@
 close all;clc;clear
+% moment calculation
+r = 0.35; %radius(m)
+a = 22.5:45:337.5;
+l = zeros(3,8);
+I=[0.619 -0.008 0;-0.008 0.782 0;0 0 1.226];
+% I=[10 -0.008 0;-0.008 10 0;0 0 20];
+for i = 1:length(a)
+    l(1:2,i) = r*[cosd(a(i));sind(a(i))];
+end
+% Model parameters
+TimeStep = 10^-3;   %Simulation time step(second)
+TimeStop = 5;      %Simulation time (second)
+% thrust decomposition
+gam = 30;
+T = 0.3 +zeros(1,8);%thrust (N)
+for i = 1:length(T)
+    if mod(i,2) == 0
+        F(1:3,i) = [T(i)*sind(gam)*sind(a(i));-T(i)*sind(gam)*cosd(a(i));T(i)*cosd(gam)];
+    else
+        F(1:3,i) = [-T(i)*sind(gam)*sind(a(i));T(i)*sind(gam)*cosd(a(i));T(i)*cosd(gam)];
+    end
+end
+% moment produce by every thruster
 
-a = 0.5;    %angular acclereation in one axis
-t_doff = 0.1;   %close dealy of thruster
-t_don = 0.2;    %open delay of thruster
-H = 0:0.01:0.9;   %hysteresis
-D = 0:0.01:0.9;   %deadband
-Kd = 1.3;   %angular velocity gain
-for i = 1:length(H)
-    for j = 1:length(D)
-        HR(i,j) = (H(i)- D(j))/(H(i)+D(j));
-        d(i,j) = 0.5*(H(i)+D(j));
-        d_lower(i,j) = ( a*t_doff*(2*Kd-t_don)*(2*Kd-t_doff) )/( 8*Kd - 4*t_don - 4*t_doff - HR(i,j)*(2*Kd*t_don) );
-        if d(i,j)>d_lower(i,j) && H(i)>D(j)
-            P_max(i,j) = ( a*t_doff*(2*Kd-t_doff)+2*(H(i)-D(j)) )/(4*Kd-2*t_doff-2*t_don);
-            theta_1(i,j) = H(i) - Kd*P_max(i,j) + t_don*P_max(i,j);
-            theta_max(i,j) = theta_1(i,j) + P_max(i,j)^2/(2*a);
-            period(i,j) = 4*( theta_1(i,j)/P_max(i,j) + P_max(i,j)/a );
-        else
-            P_max(i,j) = NaN;
-            theta_1(i,j) = NaN;
-            theta_max(i,j) = NaN;
-            period(i,j) = NaN;
+for i = 1:length(T)
+    Moment_thrust(1:3,i) = cross(l(1:3,i),F(1:3,i));
+end
+rad2deg(I^-1*Moment_thrust)
+I^-1*Moment_thrust
+%% limit cycle
+a = 8;    %angular acclereation in one axis
+t_doff = 0.01;   %close dealy of thruster
+t_don = 0.01;    %open delay of thruster
+H = 0:0.01:1;   %hysteresis
+D = 0:0.01:1;   %deadband
+Kd = linspace(0.5,1.5,9);   %angular velocity gain
+for k = 1:length(Kd)
+    for i = 1:length(H)
+        for j = 1:length(D)
+            HR(i,j,k) = (H(i)- D(j))/(H(i)+D(j));
+            d(i,j,k) = 0.5*(H(i)+D(j));
+            d_lower(i,j,k) = ( a*t_doff*(2*Kd(k)-t_don)*(2*Kd(k)-t_doff) )/( 8*Kd(k) - 4*t_don - 4*t_doff - HR(i,j)*(2*Kd(k)*t_don) );
+            if d(i,j,k)>d_lower(i,j,k) && H(i)>D(j)
+                %P_max(i,j,k) = ( a*t_doff*(2*Kd(k)-t_doff)+2*(H(i)-D(j)) )/(4*Kd(k)-2*t_doff-2*t_don);
+                P_max(i,j,k) = ( a*t_doff*(2*Kd(k)-t_doff)+2*(H(i)-D(j)) )/(4*Kd(k));
+                theta_1(i,j,k) = H(i) - Kd(k)*P_max(i,j) + t_don*P_max(i,j);
+                theta_max(i,j,k) = theta_1(i,j) + P_max(i,j)^2/(2*a);
+                period(i,j,k) = 4*( theta_1(i,j)/P_max(i,j) + P_max(i,j)/a );
+            else
+                P_max(i,j,k) = NaN;
+                theta_1(i,j,k) = NaN;
+                theta_max(i,j,k) = NaN;
+                period(i,j,k) = NaN;
+            end
         end
     end
 end
+% P_max = rad2deg(P_max);
+% theta_max = rad2deg(theta_max);
+% period = rad2deg(period);
+%% visualize
+% 创建伪彩色图 - theta_max
+figure; % 创建新的图形窗口
+for i = 1:length(Kd)
+    subplot(3,3,i);
+    surf(D, H, theta_max(:,:,i)); % 注意这里的索引
+    shading interp; % 使用插值来使颜色平滑过渡
+    xlabel("DeadBand");
+    ylabel("Hysteresis");
+    title("Theta_{max} (Kd = " + num2str(Kd(i)) + ")");
+    colorbar;
+end
 
-figure(1)
-surf(D,H,rad2deg(theta_max))
-xlabel("DeadBand")
-ylabel("hysteresis")
-title("max angular error")
-colorbar
+% 创建伪彩色图 - period
+figure; % 创建新的图形窗口
+for i = 1:length(Kd)
+    subplot(3,3,i);
+    surf(D, H, period(:,:,i)); % 注意这里的索引
+    shading interp; % 使用插值来使颜色平滑过渡
+    xlabel("DeadBand");
+    ylabel("Hysteresis");
+    title("Period (Kd = " + num2str(Kd(i)) + ")");
+    colorbar;
+end
 
-figure(2)
-surf(D,H,period)
-xlabel("DeadBand")
-ylabel("hysteresis")
-title("period")
-colorbar
+% 创建伪彩色图 - P_max
+figure; % 创建新的图形窗口
+for i = 1:length(Kd)
+    subplot(3,3,i);
+    surf(D, H, P_max(:,:,i)); % 注意这里的索引
+    shading interp; % 使用插值来使颜色平滑过渡
+    xlabel("DeadBand");
+    ylabel("Hysteresis");
+    title("P_{max} (Kd = " + num2str(Kd(i)) + ")");
+    colorbar;
+end
 
-figure(3)
-surf(D,H,rad2deg(P_max))
-xlabel("DeadBand")
-ylabel("hysteresis")
-title("max angular rate error")
-colorbar
+% figure(1)
+% surf(D,H,rad2deg(theta_max))
+% xlabel("DeadBand")
+% ylabel("hysteresis")
+% title("max angular error")
+% colorbar
+%
+% figure(2)
+% surf(D,H,period)
+% xlabel("DeadBand")
+% ylabel("hysteresis")
+% title("period")
+% colorbar
+%
+% figure(3)
+% surf(D,H,rad2deg(P_max))
+% xlabel("DeadBand")
+% ylabel("hysteresis")
+% title("max angular rate error")
+% colorbar
