@@ -4,29 +4,29 @@ close all ;clc;clear
 TimeStep = 10^-6;   %Simulation time step(second)
 TimeStop = 30;      %Simulation time (second)
 %% Mission Parameters
-initial_condition = [10;10;0];
+initial_condition = [20;20;0];
 Desire_att = [0;0;90];    %desire attitude in roll pitch yaw(degree)
 %% PWPF parameter
 filter_gain_x = 4;
 filter_time_constant_x = 0.1;
 Schimitt_Upper_bound_x = 0.5;
 Schimitt_Lower_bound_x = 0.15;
-Thruster_mom_x = 0.35*0.5*2;
-thrust_delay_x = 0.2;
+Thruster_mom_x = 0.35*0.5;
+thrust_delay_x = 0.1;
 
 filter_gain_y = 4;
 filter_time_constant_y = 0.1;
 Schimitt_Upper_bound_y = 0.5;
 Schimitt_Lower_bound_y = 0.15;
-Thruster_mom_y = 0.35*0.5*2;
-thrust_delay_y = 0.2;
+Thruster_mom_y = 0.35*0.5;
+thrust_delay_y = 0.1;
 
-filter_gain_z = 4;
-filter_time_constant_z = 0.1;
+filter_gain_z = 1;
+filter_time_constant_z = 0.5;
 Schimitt_Upper_bound_z = 0.5;
 Schimitt_Lower_bound_z = 0.15;
 Thruster_mom_z = 0.35*0.5*2;
-thrust_delay_z = 0.2;%thrust delay (s)
+thrust_delay_z = 0.1;%thrust delay (s)
 %% Simulink
 SimulinkData=sim("lunar_lander_sim_PWPF_sat_2023a.slx",TimeStop);
 
