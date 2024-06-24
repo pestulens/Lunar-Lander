@@ -1,0 +1,58 @@
+close all ;clc;clear
+% 定義參數
+Km = 7.46; % 增益
+Tm = 1.33; % 時間常數
+h = 0.2; % 滯後寬度
+% 定義頻率範圍
+omega = logspace(-1, 1, 500);
+
+% 定義不同的X值
+X_values = 0.6:0.1:1;  % Example values of X
+
+% 初始化存儲幅頻特性和相頻特性的變數
+abs_NN = zeros(length(omega), length(X_values));
+phase_NN = zeros(length(omega), length(X_values));
+abs_real_NN = zeros(length(omega), length(X_values));
+abs_imag_NN = zeros(length(omega), length(X_values));
+% 循環計算不同X值下的閉環傳遞函數
+for idx = 1:length(X_values)
+    X = X_values(idx);
+    
+    % 計算第一階濾波器的頻率特性 L(jw)
+    L = Km ./ (1 + 1i*omega*Tm);
+    
+    % 計算施密特觸發器的描述函數 N(X)
+    N = (4./(pi*X)) .* sqrt(1 - (h./X).^2) - 1i .* (4*h./(pi*X.^2));
+    
+    % 計算開環傳遞函數 G(jw)
+    G = L .* N;
+    
+    % 計算閉環傳遞函數 NN(X, omega)
+    NN = G ./ (1 + G);
+    
+    % 存儲結果
+    abs_real_NN(:, idx) = abs(real(NN));
+    abs_imag_NN(:, idx) = abs(imag(NN));
+    abs_NN(:, idx) = abs(NN);
+    phase_NN(:, idx) = angle(NN) * (180/pi);
+end
+
+% 繪製幅頻特性圖
+figure;
+subplot(2,1,1);
+semilogx(omega, abs_real_NN); 
+title('Magnitude Response');
+xlabel('Frequency (rad/s)');
+ylabel('Real part');
+% legend('X = 1', 'X = 2', 'X = 3');  % 添加對應的X值標籤
+axis([0 10 0.01 1])
+grid on;
+
+% 繪製相頻特性圖
+subplot(2,1,2);
+semilogx(omega, abs_imag_NN); 
+title('Phase Response');
+xlabel('Frequency (rad/s)');
+ylabel('Imagine part');
+% legend('X = 1', 'X = 2', 'X = 3');  % 添加對應的X值標籤
+grid on;
