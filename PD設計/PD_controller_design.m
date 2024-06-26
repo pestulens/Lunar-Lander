@@ -7,7 +7,7 @@ a = -0.9;     % 常數 a，需根據具體問題設置
 b = 0;
 d = -0.7;     % 指數 d，需根據具體問題設置
 omega_c = 0.5; % 交越頻率，需根據具體問題設置
-
+J = 1;
 % 定義需要求解的未知數
 syms Kd gamma
 
@@ -27,3 +27,9 @@ gamma_sol = double(sol.gamma);
 % 顯示結果
 fprintf('Kd = %.4f\n', Kd_sol);
 fprintf('gamma = %.4f\n', gamma_sol);
+
+% 計算 Kp
+Kp = (J * omega_c^2) / ((1 + (Kd_sol * omega_c)^2)^(gamma_sol / 2) * sqrt(a^2 + (c * omega_c^(-d))^2));
+
+% 顯示結果
+fprintf('Kp = %.4f\n', Kp);
