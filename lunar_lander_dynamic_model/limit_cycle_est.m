@@ -13,7 +13,7 @@ TimeStep = 10^-3;   %Simulation time step(second)
 TimeStop = 5;      %Simulation time (second)
 % thrust decomposition
 gam = 30;
-T = 0.3 +zeros(1,8);%thrust (N)
+T = 0.5 +zeros(1,8);%thrust (N)
 for i = 1:length(T)
     if mod(i,2) == 0
         F(1:3,i) = [T(i)*sind(gam)*sind(a(i));-T(i)*sind(gam)*cosd(a(i));T(i)*cosd(gam)];

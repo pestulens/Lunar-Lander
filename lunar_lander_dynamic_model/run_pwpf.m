@@ -2,10 +2,10 @@ close all ;clc;clear
 
 %% Model parameters
 TimeStep = 10^-6;   %Simulation time step(second)
-TimeStop = 60;      %Simulation time (second)
+TimeStop = 80;      %Simulation time (second)
 %% Mission Parameters
 initial_condition = [20;20;0];
-Desire_att = [0;0;45];    %desire attitude in roll pitch yaw(degree)
+Desire_att = [0;0;90];    %desire attitude in roll pitch yaw(degree)
 %% PWPF parameter
 filter_gain_x = 4;
 filter_time_constant_x = 0.1;
