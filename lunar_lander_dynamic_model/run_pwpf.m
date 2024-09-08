@@ -29,48 +29,48 @@ Schimitt_Lower_bound_z = 0.15;
 Thruster_mom_z = 0.35*0.5*2;
 thrust_delay_z = 0.1;%thrust delay (s)
 %% Simulink
-SimulinkData=sim("lunar_lander_sim_PWPF_tuned.slx",TimeStop);
+SimulinkData=sim("rate_control.slx",TimeStop);
 
 %% Extract Data
 angle = SimulinkData.angle.Data;
 angle_rate = SimulinkData.angular_rate.Data;
-pwpf_output = SimulinkData.u_z.Data;
-pd_out = SimulinkData.PD_out.Data;
+% pwpf_output = SimulinkData.u_z.Data;
+% pd_out = SimulinkData.PD_out.Data;
 
 %% pwpf output data 整理
 % on_pos = zeros(length(pwpf_output),1);
 % on_neg = zeros(length(pwpf_output),1);
 j = 1;
 k = 1;
-for i = 1:length(pwpf_output)
-    if pwpf_output(i)>0
-        on_pos(j,1) = 1;
-        on_pos(j,2) = angle(i,3)-Desire_att(3);
-        on_pos(j,3) = angle_rate(i,3);
-        on_pos(j,4) = angle_rate(i,3)+angle(i,3)-Desire_att(3);
-        j = j+1;
-    elseif pwpf_output(i)<0
-        on_neg(k,1) = 1;
-        on_neg(k,2) = angle(i,3)-Desire_att(3);
-        on_neg(k,3) = angle_rate(i,3);
-        on_neg(j,4) = angle_rate(i,3)+angle(i,3)-Desire_att(3);
-        k=k+1;
-    end
-end
-%% find swith point
-j = 1;
-k = 1;
-for i = 1:length(pwpf_output)-1
-    if pwpf_output(i) == 0 && pwpf_output(i+1)>0
-        switch_point_pos(j,1) = i;
-        switch_point_pos(j,2) = Desire_att(3)-angle(i,3);
-        switch_point_pos(j,3) = angle_rate(i,3);
-        switch_point_pos(j,4) = switch_point_pos(j,2)-switch_point_pos(j,3);
-        switch_point_pos(j,5) = pd_out(i);
-        j=j+1;
-
-    end
-end
+% for i = 1:length(pwpf_output)
+%     if pwpf_output(i)>0
+%         on_pos(j,1) = 1;
+%         on_pos(j,2) = angle(i,3)-Desire_att(3);
+%         on_pos(j,3) = angle_rate(i,3);
+%         on_pos(j,4) = angle_rate(i,3)+angle(i,3)-Desire_att(3);
+%         j = j+1;
+%     elseif pwpf_output(i)<0
+%         on_neg(k,1) = 1;
+%         on_neg(k,2) = angle(i,3)-Desire_att(3);
+%         on_neg(k,3) = angle_rate(i,3);
+%         on_neg(j,4) = angle_rate(i,3)+angle(i,3)-Desire_att(3);
+%         k=k+1;
+%     end
+% end
+% %% find swith point
+% j = 1;
+% k = 1;
+% for i = 1:length(pwpf_output)-1
+%     if pwpf_output(i) == 0 && pwpf_output(i+1)>0
+%         switch_point_pos(j,1) = i;
+%         switch_point_pos(j,2) = Desire_att(3)-angle(i,3);
+%         switch_point_pos(j,3) = angle_rate(i,3);
+%         switch_point_pos(j,4) = switch_point_pos(j,2)-switch_point_pos(j,3);
+%         switch_point_pos(j,5) = pd_out(i);
+%         j=j+1;
+% 
+%     end
+% end
 
 %% plot
 
