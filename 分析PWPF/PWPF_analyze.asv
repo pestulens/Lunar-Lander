@@ -2,9 +2,9 @@ close all ;clc;clear
 % Data = load("valid.mat");
 
 % 定義參數
-Km = 1; % 增益
+Km = 2; % 增益
 Tm = 0.5; % 時間常數
-h = 0.4; % 滯後寬度
+h = 0.55; % 滯後寬度
 mim_pluse_time =  -Tm*log(1-(h/Km))
 % 定義頻率範圍
 omega = logspace(-1, 1, 1000);

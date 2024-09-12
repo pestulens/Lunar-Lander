@@ -1,7 +1,7 @@
 close all ;clc;clear
 
 %% Model parameters
-TimeStep = 10^-3;   %Simulation time step(second)
+TimeStep = 10^-4;   %Simulation time step(second)
 TimeStop = 80;      %Simulation time (second)
 I = 1*[0.619 -0.008 0;-0.008 0.782 0;0 0 1.226];
 %% Mission Parameters
@@ -21,6 +21,7 @@ Schimitt_Upper_bound_y = 0.5;
 Schimitt_Lower_bound_y = 0.15;
 Thruster_mom_y = 0.35*0.5;
 thrust_delay_y = 0.1;
+
 
 filter_gain_z = 2;
 filter_time_constant_z = 0.5;
@@ -73,11 +74,12 @@ k = 1;
 % end
 
 %% plot
+t = 0:TimeStep:TimeStop;
 
 for i = 1:3
     figure(i)
     plot(Desire_att(i)-angle(:,i),-angle_rate(:,i),"LineWidth",2)
-    xlabel("Attitude(degree)","FontSize",14)
+    xlabel("Attitude error(degree)","FontSize",14)
     ylabel("Angular rate(degree/s)","FontSize",14)
     switch i
         case 1
@@ -87,6 +89,17 @@ for i = 1:3
         case 3
             title("Z-Direction","FontSize",20)
     end
+end
+
+figure(i+1)
+
+for j = 1:3
+    plot(t,angle(:,j),"LineWidth",2)
+    hold on
+    xlabel("Time(s)","FontSize",14)
+    ylabel("Attitude(degree/)","FontSize",14)
+    title("姿態響應","FontSize",20)
+    legend("phi angle","theta angle","psi angle")
 end
 
 
