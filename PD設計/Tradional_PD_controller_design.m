@@ -1,19 +1,12 @@
 close all;clc;clear
 
 % 定義已知參數
-<<<<<<< Updated upstream
-phi_m = deg2rad(30); % 相位裕度，需根據具體問題設置
-c = -0.10;    % 常數 c
-a = -0.5;    % 常數 a
-d = -0.74;    % 指數 d
-omega_c = 0.5; % 交越頻率，需根據具體問題設置
-=======
+
 phi_m = deg2rad(50); % 相位裕度，需根據具體問題設置
 c = 0.22;    % 常數 c
 a = -0.7;    % 常數 a
 d = 0.7;    % 指數 d
 omega_c = 1; % 交越頻率，需根據具體問題設置
->>>>>>> Stashed changes
 J = 1;     % 常數 J
 % 定義需要求解的未知數
 syms Kd

@@ -12,14 +12,14 @@ filter_gain_x = 2;
 filter_time_constant_x = 0.5;
 Schimitt_Upper_bound_x = 3;
 Schimitt_Lower_bound_x = 0.15;
-Thruster_mom_x = 0.35*1;
+Thruster_mom_x = 0.35*0.5;
 thrust_delay_x = 0.1;
 
 filter_gain_y = 2;
 filter_time_constant_y = 0.5;
 Schimitt_Upper_bound_y = 3;
 Schimitt_Lower_bound_y = 0.15;
-Thruster_mom_y = 0.35*1;
+Thruster_mom_y = 0.35*0.5;
 thrust_delay_y = 0.1;
 
 
@@ -27,16 +27,16 @@ filter_gain_z = 2;
 filter_time_constant_z = 0.5;
 Schimitt_Upper_bound_z = 3;
 Schimitt_Lower_bound_z = 0.15;
-Thruster_mom_z = 0.35*1*2;
+Thruster_mom_z = 0.35*0.5*2;
 thrust_delay_z = 0.1;%thrust delay (s)
-%% Run Simulink 
+%% Simulink
 SimulinkData=sim("rate_control.slx",TimeStop);
 
 %% Extract Data
 angle = SimulinkData.angle.Data;
 angle_rate = SimulinkData.angular_rate.Data;
-thruster_positve_z = SimulinkData.thruster_positve_z.Data;
-thruster_command_positve_z = SimulinkData.thruster_command_positve_z.Data;
+thruster_positve_z = SimulinkData.thruster_positve_z;
+thruster_command_positve_z = SimulinkData.thruster_command_positve_z;
 % pwpf_output = SimulinkData.u_z.Data;
 % pd_out = SimulinkData.PD_out.Data;
 
@@ -98,8 +98,8 @@ figure(i+1)
 for j = 1:3
     plot(t,angle(:,j),"LineWidth",2)
     hold on
-    xlabel("Time(Second)","FontSize",14)
-    ylabel("Attitude(degree)","FontSize",14)
+    xlabel("Time(s)","FontSize",14)
+    ylabel("Attitude(degree/)","FontSize",14)
     title("姿態響應","FontSize",20)
     legend("phi angle","theta angle","psi angle")
 end
@@ -111,14 +111,3 @@ end
 % figure(i+1)
 % plot(x,c(20:length(c)),x,switch_point_pos(20:length(c),5))
 % legend("manul pd","auto pd")
-
-%% thruster plot
-figure(i+2)
-yyaxis left
-plot(t,100*(thruster_positve_z/0.35),LineWidth=2)
-xlabel("Time(Second)","FontSize",16,"LineWidth",5)
-ylabel("Thruster(g)","FontSize",16,"LineWidth",5)
-yyaxis right
-plot(t,thruster_command_positve_z,LineWidth=2)
-legend("推力","開閥訊號","FontSize",12)
-title("+Z旋轉方向推力與命令對比圖","FontSize",20,"LineWidth",5)
