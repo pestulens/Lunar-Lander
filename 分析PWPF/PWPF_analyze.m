@@ -23,7 +23,8 @@ for idx = 1:length(X_values)
     X = X_values(idx);
     
     % 計算第一階濾波器的頻率特性 L(jw)
-    L = Km ./ (1 + 1i*omega*Tm);
+    L = 1;
+%     L = Km ./ (1 + 1i*omega*Tm);
     
     % 計算施密特觸發器的描述函數 N(X)
     N = (4./(pi*X)) .* sqrt(1 - (h./X).^2) - 1i .* (4*h./(pi*X.^2));
@@ -49,7 +50,7 @@ title('Magnitude Response');
 xlabel('Frequency (rad/s)');
 ylabel('Real part');
 % legend('X = 1', 'X = 2', 'X = 3');  % 添加對應的X值標籤
-axis([0 10 0.01 1])
+axis([0 100 0.01 1])
 grid on;
 
 % 繪製相頻特性圖
